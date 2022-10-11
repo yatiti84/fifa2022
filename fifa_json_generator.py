@@ -4,7 +4,8 @@ import pygsheets
 import numpy as np
 from random import random
 from configs import groupShtID, round16ShtID, advanceShtID, googleshtURL, flags_mapping, acceptable_group, acceptable_round
-
+import tempfile
+tmpdir = tempfile.gettempdir()
 
 def get_sht_data(shtID):
     # /usr/local/cronjobs/mirrormedia-1470651750304-dbc9a9119b4e
@@ -30,7 +31,7 @@ for row in advancedData:
 
 
 def uploadJson(filename, data, dataname):
-    with open(filename, 'w') as f:
+    with open(f'{tmpdir}/{filename}', 'w') as f:
         f.write(json.dumps({dataname: data}, ensure_ascii=False))
 
     os.system("gsutil -m -h \"Content-Type:application/json\" -h \"Cache-Control:max-age=600,public\" \
@@ -45,7 +46,7 @@ def generate_group_schedule(row, groups):
     game["team1"] = f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
     game["team2"] = f'{flags_mapping.setdefault(row[4], "")} {row[4]}'
     game["ended"] = True if row[5] == 'TRUE' else False
-    print(game)
+    #print(game)
     group = groups.setdefault(groupName, [])
     group.append(game)
 
@@ -195,7 +196,17 @@ def generate_round16_json():
                roundOf16, "roundOf16")
 
 
-if __name__ == "__main__":
+def genJson():
+    """Responds to any HTTP request.
+    Args:
+        request (flask.Request): HTTP request object.
+    Returns:
+        The response text or any set of values that can be turned into a
+        Response object using
+        `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
+    """
     generate_group_json()
     generate_round16_json()
     print("done")
+    return "OK"
+genJson()  
