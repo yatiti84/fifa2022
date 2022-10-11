@@ -1,0 +1,303 @@
+{
+    "result": [
+        {
+            "A": [
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                { //以下欄位只計算結束 = TRUE
+                    "key": "string [randomKey]",
+                    "team": "string [emoji teamName]",
+                    "GP": "int 場次，(小組賽）賽程／戰績-結束value為true的次數",
+                    "points": "int 積分，(小組賽）賽程／戰績-該隊比分（對戰隊伍一二）value加總",
+                    "wins": "int 勝(小組賽）賽程／戰績-該隊比分（對戰隊伍一二）較高的次數",
+                    "losses": "int 負，(小組賽）賽程／戰績-該隊比分（對戰隊伍一二）較低的次數",
+                    "draws": "int 平，(小組賽）賽程／戰績-該隊比分（對戰隊伍一二）相同的次數",
+                    "GS": "int 進球，同points",
+                    "GA": "int 失分，(小組賽）賽程／戰績-敵隊比分（對戰隊伍一二）value加總",
+                    "GD": "int 淨勝，GS-GA(It is possible that value <=0 )",
+                    "recent": [
+                        // 只抓取 結束 = TRUE 的資料 判斷(小組賽）賽程／戰績-比分 ，勝為true, 敗為false, 和局為null, 
+                        // 未開始的場次不抓資料
+                        {
+                            "1": "boolean [true/false/null]"
+                        },
+                        {
+                            "2": "boolean"
+                        }
+                    ],
+                    "advanced": "boolean 是否晉級，（小組賽）晉級名單-晉級隊伍，出現隊伍名稱名稱代表晉級->true[true/false]"
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                }
+            ]
+        },
+        {
+            "B": [
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                }
+            ]
+        },
+        {
+            "C": [
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                },
+                {
+                    "key": "01",
+                    "team": "🇶🇦 卡達",
+                    "GP": 3,
+                    "points": 9,
+                    "wins": 1,
+                    "losses": 1,
+                    "draws": 1,
+                    "GS": 9,
+                    "GA": 3,
+                    "GD": 6,
+                    "recent": [
+                        {
+                            "1": true
+                        },
+                        {
+                            "2": false
+                        },
+                        {
+                            "3": null
+                        }
+                    ],
+                    "advanced": true
+                }
+            ]
+        }
+    ]
+}
