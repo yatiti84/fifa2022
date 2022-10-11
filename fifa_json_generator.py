@@ -2,6 +2,7 @@ import json
 import os
 import pygsheets
 import numpy as np
+from google.cloud import storage
 from random import random
 from configs import groupShtID, round16ShtID, advanceShtID, googleshtURL, flags_mapping, acceptable_group, acceptable_round
 import tempfile
@@ -33,9 +34,16 @@ for row in advancedData:
 def uploadJson(filename, data, dataname):
     with open(f'{tmpdir}/{filename}', 'w') as f:
         f.write(json.dumps({dataname: data}, ensure_ascii=False))
-
-    os.system("gsutil -m -h \"Content-Type:application/json\" -h \"Cache-Control:max-age=600,public\" \
-                        cp -z gzip -a public-read -r " + filename + " gs://statics.mirrormedia.mg/json")
+    storage_client = storage.Client().from_service_account_json('key.json')
+    bucket = storage_client.bucket('statics.mirrormedia.mg')
+    blob = bucket.blob(f'json/{filename}')
+    blob.upload_from_filename(f'{tmpdir}/{filename}')
+    print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
+    blob.make_public()
+    blob.cache_control = 'max-age=180'
+    blob.content_type = 'application/json'
+    blob.patch()
+    print("The metadata configuration for the blob is complete")
 
 
 def generate_group_schedule(row, groups):
@@ -192,7 +200,7 @@ def generate_round16_json():
 
     # with open('fifa2022_round16.json', 'w') as f:
     #     f.write(json.dumps({"roundOf16": roundOf16}, ensure_ascii=False))
-    uploadJson('fifa2022_grofifa2022_round16up_result.json',
+    uploadJson('fifa2022_round16up_result.json',
                roundOf16, "roundOf16")
 
 
