@@ -12,6 +12,7 @@ def get_sht_data(shtID):
     # /usr/local/cronjobs/mirrormedia-1470651750304-dbc9a9119b4e
     gc = pygsheets.authorize(service_file='key.json')
     sht = gc.open_by_url(googleshtURL)
+    print(sht.updated)
     wks = sht.worksheet('id', shtID)
     # wks = sht.worksheet_by_title(title)
     return wks.get_all_values()
@@ -34,16 +35,16 @@ for row in advancedData:
 def uploadJson(filename, data, dataname):
     with open(f'{tmpdir}/{filename}', 'w') as f:
         f.write(json.dumps({dataname: data}, ensure_ascii=False))
-    storage_client = storage.Client().from_service_account_json('key.json')
-    bucket = storage_client.bucket('statics.mirrormedia.mg')
-    blob = bucket.blob(f'json/{filename}')
-    blob.upload_from_filename(f'{tmpdir}/{filename}')
-    print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
-    blob.make_public()
-    blob.cache_control = 'max-age=180'
-    blob.content_type = 'application/json'
-    blob.patch()
-    print("The metadata configuration for the blob is complete")
+    # storage_client = storage.Client().from_service_account_json('key.json')
+    # bucket = storage_client.bucket('statics.mirrormedia.mg')
+    # blob = bucket.blob(f'json/{filename}')
+    # blob.upload_from_filename(f'{tmpdir}/{filename}')
+    # print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
+    # blob.make_public()
+    # blob.cache_control = 'max-age=180'
+    # blob.content_type = 'application/json'
+    # blob.patch()
+    # print("The metadata configuration for the blob is complete")
 
 
 def generate_group_schedule(row, groups):
@@ -90,10 +91,16 @@ def organize_team_result(teamName, row, team):
         team["GA"] += team1Score
     team["GS"] = team["points"]
     team["GD"] = team["GS"] - team["GA"]
-    gamePlayed = team["GP"] if team["recent"] else 1
+    # recentCount = team["GP"] if team["recent"] else 0
     if teamName in advancedTeams:
         team["advanced"] = True
-    team["recent"].append({gamePlayed: thisGameResult})
+    
+    team["recent"].insert(0, {0: thisGameResult})
+    for  i, rec in enumerate(team["recent"]):
+        if i in rec:
+            rec[i+1] = rec.pop(i)
+
+
 
 
 def generate_group_result(row, groups_result):
@@ -170,7 +177,7 @@ def generate_round16_json():
     for row in round16Data:
         # print(row)
         round = row[0]
-        if round not in acceptable_round:
+        if round not in acceptable_round or not (row[1] and row[2]) :
             continue
         acceptable_round[round] += 1
         ended = True if row[5] == 'TRUE' else False
@@ -200,7 +207,7 @@ def generate_round16_json():
 
     # with open('fifa2022_round16.json', 'w') as f:
     #     f.write(json.dumps({"roundOf16": roundOf16}, ensure_ascii=False))
-    uploadJson('fifa2022_round16up_result.json',
+    uploadJson('fifa2022_round16_result.json',
                roundOf16, "roundOf16")
 
 
@@ -214,7 +221,7 @@ def genJson():
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     generate_group_json()
-    generate_round16_json()
+    # generate_round16_json()
     print("done")
     return "OK"
 genJson()  
