@@ -1,15 +1,13 @@
 import json
-import os
 import pygsheets
 import numpy as np
 from google.cloud import storage
 from random import random
 from configs import groupShtID, round16ShtID, advanceShtID, googleshtURL, flags_mapping, acceptable_group, acceptable_round
 import tempfile
-tmpdir = tempfile.gettempdir()
+# tmpdir = tempfile.gettempdir()
 
 def get_sht_data(shtID):
-    # /usr/local/cronjobs/mirrormedia-1470651750304-dbc9a9119b4e
     gc = pygsheets.authorize(service_file='key.json')
     sht = gc.open_by_url(googleshtURL)
     print(sht.updated)
@@ -22,18 +20,11 @@ def generateRandomKey():
     return np.base_repr(int(np.floor(random() * 2 ** 24)), 32).lower()
 
 
-groupData = get_sht_data(groupShtID)
-round16Data = get_sht_data(round16ShtID)
-advancedData = get_sht_data(advanceShtID)
-
-advancedTeams = []
-for row in advancedData:
-    if row[0] in acceptable_group:
-        advancedTeams.append(row[1])
 
 
+# {tmpdir}/
 def uploadJson(filename, data, dataname):
-    with open(f'{tmpdir}/{filename}', 'w') as f:
+    with open(f'{filename}', 'w') as f:
         f.write(json.dumps({dataname: data}, ensure_ascii=False))
     # storage_client = storage.Client().from_service_account_json('key.json')
     # bucket = storage_client.bucket('statics.mirrormedia.mg')
@@ -51,7 +42,7 @@ def generate_group_schedule(row, groups):
     game = {}
     groupName = row[0]
     game["key"] = generateRandomKey()
-    game["dateTime"] = f'{row[1]} {row[2]}'
+    game["dateTime"] = f'{row[8]}'
     game["team1"] = f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
     game["team2"] = f'{flags_mapping.setdefault(row[4], "")} {row[4]}'
     game["ended"] = True if row[5] == 'TRUE' else False
@@ -60,7 +51,7 @@ def generate_group_schedule(row, groups):
     group.append(game)
 
 
-def organize_team_result(teamName, row, team):
+def organize_team_result(teamName, row, team, advancedTeams):
     team["GP"] += 1
 
     team1Score = int(row[6])
@@ -91,19 +82,15 @@ def organize_team_result(teamName, row, team):
         team["GA"] += team1Score
     team["GS"] = team["points"]
     team["GD"] = team["GS"] - team["GA"]
-    # recentCount = team["GP"] if team["recent"] else 0
     if teamName in advancedTeams:
         team["advanced"] = True
-    
     team["recent"].insert(0, {0: thisGameResult})
     for  i, rec in enumerate(team["recent"]):
         if i in rec:
             rec[i+1] = rec.pop(i)
 
 
-
-
-def generate_group_result(row, groups_result):
+def generate_group_result(row, groups_result, advancedTeams):
     groupName = row[0]
     team1Name = row[3]
     team2Name = row[4]
@@ -138,14 +125,16 @@ def generate_group_result(row, groups_result):
     group = groups_result.setdefault(groupName, {})
     team1 = group.setdefault(team1Name, team1_template)
     team2 = group.setdefault(team2Name, team2_template)
-    organize_team_result(team1Name, row, team1)
-    organize_team_result(team2Name, row, team2)
+    organize_team_result(team1Name, row, team1, advancedTeams)
+    organize_team_result(team2Name, row, team2, advancedTeams)
 
 
-def generate_group_json():
+def generate_group_json(groupData, advancedTeams):
     groups_schedule = {}
     groups_result = {}
     for row in groupData:
+        if row[0] == '':
+            continue
         # print(row)
         group = row[0]
         if group not in acceptable_group:
@@ -154,25 +143,23 @@ def generate_group_json():
 
         ended = True if row[5] == 'TRUE' else False
         if ended and row[3] and row[4] and row[6] and row[7]:
-            generate_group_result(row, groups_result)
+            generate_group_result(row, groups_result, advancedTeams)
 
-    schedule = [{groupName: sorted(groupGames, key=lambda x: x['dateTime'])}
+    schedule = [{groupName: groupGames}
                 for groupName, groupGames in groups_schedule.items()]
-    schedule.sort(key=lambda x: list(x.keys()))  # sort by group
-
-    result = [{groupName: [teamResult for teamResult in groupResult.values()]}
-              for groupName, groupResult in groups_result.items()]
+    schedule.sort(key=lambda x: list(x.keys()))  # sort by groupName ascending
+    
+    result = []
+    for groupName, groupResult in groups_result.items():
+        t = [teamResult for teamResult in groupResult.values()]
+        result.append({groupName: sorted(t, key=lambda x: x["points"], reverse=True)})# sort group result by points descending
     result.sort(key=lambda x: list(x.keys()))  # sort by group
 
-    # with open('fifa2022_group_schedule.json', 'w') as f:
-    #     f.write(json.dumps({"schedule": schedule}, ensure_ascii=False))
-    # with open('fifa2022_group_result.json', 'w') as f:
-    # f.write(json.dumps({"result": result}, ensure_ascii=False))
     uploadJson('fifa2022_group_schedule.json', schedule, "schedule")
     uploadJson('fifa2022_group_result.json', result, "result")
 
 
-def generate_round16_json():
+def generate_round16_json(round16Data):
     roundOf16 = []
     for row in round16Data:
         # print(row)
@@ -205,9 +192,7 @@ def generate_round16_json():
 
         roundOf16.append(game)
 
-    # with open('fifa2022_round16.json', 'w') as f:
-    #     f.write(json.dumps({"roundOf16": roundOf16}, ensure_ascii=False))
-    uploadJson('fifa2022_round16_result.json',
+    uploadJson('fifa2022_round16_result_schedule.json',
                roundOf16, "roundOf16")
 
 
@@ -220,8 +205,21 @@ def genJson():
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
-    generate_group_json()
-    # generate_round16_json()
+    groupData = get_sht_data(groupShtID)
+    for i in groupData:
+        i[8]= f'{i[1]} {i[2]}'
+    groupData.sort(key=lambda x: x[8])  # sort by time
+    
+    # groupData = [for i in groupData]
+    round16Data = get_sht_data(round16ShtID)
+    advancedData = get_sht_data(advanceShtID)
+
+    advancedTeams = []
+    for row in advancedData:
+        if row[0] in acceptable_group:
+            advancedTeams.append(row[1])
+    generate_group_json(groupData, advancedTeams)
+    generate_round16_json(round16Data)
     print("done")
     return "OK"
-genJson()  
+genJson()
