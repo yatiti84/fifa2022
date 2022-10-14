@@ -1,0 +1,226 @@
+{
+    "roundOf16": [
+        {
+            "key": "16-1",
+            "dateTime": "12/03 23:00",
+            "team1": {
+                "teamName": "🇶🇦 卡達",
+                "score": "3",
+                "scorePK": "0"
+            },
+            "team2": {
+                "teamName": "🇪🇨 厄瓜多",
+                "score": "3",
+                "scorePK": "2"
+            },
+            "ended": true,
+            "PK": true,
+            "winner": "厄瓜多"
+        },
+        {
+            "key": "16-2",
+            "dateTime": "12/04 03:00",
+            "team1": {
+                "teamName": "🇳🇱 荷蘭"
+            },
+            "team2": {
+                "teamName": "🇧🇷 巴西"
+            },
+            "ended": false,
+            "PK": false,
+            "winner": "荷蘭"
+        },
+        {
+            "key": "16-3",
+            "dateTime": "12/05 23:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "16-4",
+            "dateTime": "12/06 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "16-5",
+            "dateTime": "12/04 23:00",
+            "team1": {
+                "teamName": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 英格蘭",
+                "score": "3"
+            },
+            "team2": {
+                "teamName": "🇫🇷 法國",
+                "score": "3"
+            },
+            "ended": true,
+            "PK": false,
+            "winner": "法國"
+        },
+        {
+            "key": "16-6",
+            "dateTime": "12/05 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "16-7",
+            "dateTime": "12/06 23:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "16-8",
+            "dateTime": "12/07 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "8-1",
+            "dateTime": "12/10 03:00",
+            "team1": {
+                "teamName": "🇫🇷 法國",
+                "score": "3",
+                "scorePK": "0"
+            },
+            "team2": {
+                "teamName": "🇪🇸 西班牙",
+                "score": "3",
+                "scorePK": "2"
+            },
+            "ended": true,
+            "PK": true,
+            "winner": "西班牙"
+        },
+        {
+            "key": "8-2",
+            "dateTime": "12/09 23:00",
+            "team1": {
+                "teamName": "🇩🇪 德國",
+                "score": "1",
+                "scorePK": "2"
+            },
+            "team2": {
+                "teamName": "🇧🇷 巴西",
+                "score": "1",
+                "scorePK": "1"
+            },
+            "ended": true,
+            "PK": true,
+            "winner": "德國"
+        },
+        {
+            "key": "8-3",
+            "dateTime": "12/11 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "8-4",
+            "dateTime": "12/10 23:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "4-1",
+            "dateTime": "12/14 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "4-2",
+            "dateTime": "12/15 03:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "3-1",
+            "dateTime": "12/17 23:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        },
+        {
+            "key": "1-1",
+            "dateTime": "12/18 23:00",
+            "team1": {
+                "teamName": " "
+            },
+            "team2": {
+                "teamName": " "
+            },
+            "ended": false,
+            "PK": false,
+            "winner": ""
+        }
+    ]
+}

@@ -1,11 +1,12 @@
 import json
 import pygsheets
+from datetime import datetime
 import numpy as np
 from google.cloud import storage
 from random import random
 from configs import groupShtID, round16ShtID, advanceShtID, googleshtURL, flags_mapping, acceptable_group, acceptable_round
 import tempfile
-# tmpdir = tempfile.gettempdir()
+tmpdir = tempfile.gettempdir()
 
 def get_sht_data(shtID):
     gc = pygsheets.authorize(service_file='key.json')
@@ -21,28 +22,27 @@ def generateRandomKey():
 
 
 
-
 # {tmpdir}/
 def uploadJson(filename, data, dataname):
-    with open(f'{filename}', 'w') as f:
+    with open(f'{tmpdir}/{filename}', 'w') as f:
         f.write(json.dumps({dataname: data}, ensure_ascii=False))
-    # storage_client = storage.Client().from_service_account_json('key.json')
-    # bucket = storage_client.bucket('statics.mirrormedia.mg')
-    # blob = bucket.blob(f'json/{filename}')
-    # blob.upload_from_filename(f'{tmpdir}/{filename}')
-    # print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
-    # blob.make_public()
-    # blob.cache_control = 'max-age=180'
-    # blob.content_type = 'application/json'
-    # blob.patch()
-    # print("The metadata configuration for the blob is complete")
+    storage_client = storage.Client().from_service_account_json('key.json')
+    bucket = storage_client.bucket('statics.mirrormedia.mg')
+    blob = bucket.blob(f'json/{filename}')
+    blob.upload_from_filename(f'{tmpdir}/{filename}')
+    print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
+    blob.make_public()
+    blob.cache_control = 'max-age=180'
+    blob.content_type = 'application/json'
+    blob.patch()
+    print("The metadata configuration for the blob is complete")
 
 
 def generate_group_schedule(row, groups):
     game = {}
     groupName = row[0]
     game["key"] = generateRandomKey()
-    game["dateTime"] = f'{row[8]}'
+    game["dateTime"] = f'{row[11]}'
     game["team1"] = f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
     game["team2"] = f'{flags_mapping.setdefault(row[4], "")} {row[4]}'
     game["ended"] = True if row[5] == 'TRUE' else False
@@ -170,7 +170,7 @@ def generate_round16_json(round16Data):
         ended = True if row[5] == 'TRUE' else False
         game = {
             "key": f'{round}-{acceptable_round[round]}',
-            "dateTime": f'{row[1]} {row[2]}',
+            "dateTime": f'{row[11]}',
             "team1": {
                 "teamName": f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
             },
@@ -196,6 +196,39 @@ def generate_round16_json(round16Data):
                roundOf16, "roundOf16")
 
 
+def generate_overview_json(groupData, round16Data):
+    overview = []
+    for row in groupData + round16Data:
+        
+        # print(row)
+        group = row[0]
+        if group == "場次":
+            print("Group")
+        if group == '' or (group not in acceptable_group and group not in acceptable_round):
+            continue
+        if row[1] and row[2] and row[3] and row[4] :
+            game = {}
+            game["key"] = generateRandomKey()
+            game["dateTime"] = f'{row[11]}'
+            if group in acceptable_group:
+                game["group"] = f'{row[0]}'
+            game["team1"] = f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
+            game["team2"] = f'{flags_mapping.setdefault(row[4], "")} {row[4]}'
+            game["ended"] = True if row[5] == 'TRUE' else False
+            overview.append(game)
+    overview.sort(key=lambda x: x['dateTime'])  # sort by dateTime
+    print(len(overview))
+
+    uploadJson('fifa2022_overview_schedule.json', overview, "overview")
+    
+        
+   
+
+        
+
+    
+
+
 def genJson():
     """Responds to any HTTP request.
     Args:
@@ -207,11 +240,20 @@ def genJson():
     """
     groupData = get_sht_data(groupShtID)
     for i in groupData:
-        i[8]= f'{i[1]} {i[2]}'
-    groupData.sort(key=lambda x: x[8])  # sort by time
+        i[11] = f'{i[1]} {i[2]}'
+        if i[0] == '組別' or not i[0]:
+            continue
+        i[11] = datetime.strptime(f'{i[1]} {i[2]}', '%m/%d %H:%M')
+        i[11] = datetime.strftime(i[11], '%m/%d %H:%M')
+    groupData.sort(key=lambda x: x[11])  # sort by time
     
-    # groupData = [for i in groupData]
     round16Data = get_sht_data(round16ShtID)
+    for i in round16Data:
+        i[11] = f'{i[1]} {i[2]}'
+        if i[0] == '場次' or not i[0]:
+            continue
+        i[11] = datetime.strptime(f'{i[1]} {i[2]}', '%m/%d %H:%M')
+        i[11] = datetime.strftime(i[11], '%m/%d %H:%M')
     advancedData = get_sht_data(advanceShtID)
 
     advancedTeams = []
@@ -220,6 +262,7 @@ def genJson():
             advancedTeams.append(row[1])
     generate_group_json(groupData, advancedTeams)
     generate_round16_json(round16Data)
+    generate_overview_json(groupData, round16Data)
     print("done")
     return "OK"
 genJson()
