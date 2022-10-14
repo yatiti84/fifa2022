@@ -6,7 +6,10 @@ from google.cloud import storage
 from random import random
 from configs import groupShtID, round16ShtID, advanceShtID, googleshtURL, flags_mapping, acceptable_group, acceptable_round
 import tempfile
+
+
 tmpdir = tempfile.gettempdir()
+
 
 def get_sht_data(shtID):
     gc = pygsheets.authorize(service_file='key.json')
@@ -21,7 +24,6 @@ def generateRandomKey():
     return np.base_repr(int(np.floor(random() * 2 ** 24)), 32).lower()
 
 
-
 # {tmpdir}/
 def uploadJson(filename, data, dataname):
     with open(f'{tmpdir}/{filename}', 'w') as f:
@@ -30,7 +32,8 @@ def uploadJson(filename, data, dataname):
     bucket = storage_client.bucket('statics.mirrormedia.mg')
     blob = bucket.blob(f'json/{filename}')
     blob.upload_from_filename(f'{tmpdir}/{filename}')
-    print("File {} uploaded to {}.".format( f'{tmpdir}/{filename}', f'json/{filename}'))
+    print("File {} uploaded to {}.".format(
+        f'{tmpdir}/{filename}', f'json/{filename}'))
     blob.make_public()
     blob.cache_control = 'max-age=180'
     blob.content_type = 'application/json'
@@ -46,7 +49,6 @@ def generate_group_schedule(row, groups):
     game["team1"] = f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
     game["team2"] = f'{flags_mapping.setdefault(row[4], "")} {row[4]}'
     game["ended"] = True if row[5] == 'TRUE' else False
-    #print(game)
     group = groups.setdefault(groupName, [])
     group.append(game)
 
@@ -85,7 +87,7 @@ def organize_team_result(teamName, row, team, advancedTeams):
     if teamName in advancedTeams:
         team["advanced"] = True
     team["recent"].insert(0, {0: thisGameResult})
-    for  i, rec in enumerate(team["recent"]):
+    for i, rec in enumerate(team["recent"]):
         if i in rec:
             rec[i+1] = rec.pop(i)
 
@@ -148,11 +150,13 @@ def generate_group_json(groupData, advancedTeams):
     schedule = [{groupName: groupGames}
                 for groupName, groupGames in groups_schedule.items()]
     schedule.sort(key=lambda x: list(x.keys()))  # sort by groupName ascending
-    
+
     result = []
     for groupName, groupResult in groups_result.items():
         t = [teamResult for teamResult in groupResult.values()]
-        result.append({groupName: sorted(t, key=lambda x: x["points"], reverse=True)})# sort group result by points descending
+        # sort group result by points descending
+        result.append(
+            {groupName: sorted(t, key=lambda x: x["points"], reverse=True)})
     result.sort(key=lambda x: list(x.keys()))  # sort by group
 
     uploadJson('fifa2022_group_schedule.json', schedule, "schedule")
@@ -161,15 +165,16 @@ def generate_group_json(groupData, advancedTeams):
 
 def generate_round16_json(round16Data):
     roundOf16 = []
+    round_record = {"16": 0, "8": 0, "4": 0, "3": 0, "1": 0}
     for row in round16Data:
         # print(row)
         round = row[0]
-        if round not in acceptable_round or not (row[1] and row[2]) :
+        if round not in acceptable_round or not (row[1] and row[2]):
             continue
-        acceptable_round[round] += 1
+        round_record[round] += 1
         ended = True if row[5] == 'TRUE' else False
         game = {
-            "key": f'{round}-{acceptable_round[round]}',
+            "key": f'{round}-{round_record[round]}',
             "dateTime": f'{row[11]}',
             "team1": {
                 "teamName": f'{flags_mapping.setdefault(row[3], "")} {row[3]}'
@@ -199,14 +204,13 @@ def generate_round16_json(round16Data):
 def generate_overview_json(groupData, round16Data):
     overview = []
     for row in groupData + round16Data:
-        
         # print(row)
         group = row[0]
         if group == "場次":
             print("Group")
         if group == '' or (group not in acceptable_group and group not in acceptable_round):
             continue
-        if row[1] and row[2] and row[3] and row[4] :
+        if row[1] and row[2] and row[3] and row[4]:
             game = {}
             game["key"] = generateRandomKey()
             game["dateTime"] = f'{row[11]}'
@@ -220,13 +224,6 @@ def generate_overview_json(groupData, round16Data):
     print(len(overview))
 
     uploadJson('fifa2022_overview_schedule.json', overview, "overview")
-    
-        
-   
-
-        
-
-    
 
 
 def genJson():
@@ -246,7 +243,6 @@ def genJson():
         i[11] = datetime.strptime(f'{i[1]} {i[2]}', '%m/%d %H:%M')
         i[11] = datetime.strftime(i[11], '%m/%d %H:%M')
     groupData.sort(key=lambda x: x[11])  # sort by time
-    
     round16Data = get_sht_data(round16ShtID)
     for i in round16Data:
         i[11] = f'{i[1]} {i[2]}'
@@ -265,4 +261,6 @@ def genJson():
     generate_overview_json(groupData, round16Data)
     print("done")
     return "OK"
+
+
 genJson()
