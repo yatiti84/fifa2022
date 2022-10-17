@@ -59,30 +59,35 @@ def organize_team_result(teamName, row, team, advancedTeams):
     team1Score = int(row[6])
     team2Score = int(row[7])
     if teamName == row[3]:
-        team["points"] += team1Score
         if team1Score > team2Score:
             team["wins"] += 1
+            team["points"] += 3
             thisGameResult = True
         elif team1Score < team2Score:
             team["losses"] += 1
+            team["points"] += 0
             thisGameResult = False
         else:
             team["draws"] += 1
+            team["points"] += 1
             thisGameResult = None
+        team["GS"] += team1Score
         team["GA"] += team2Score
     else:
-        team["points"] += team2Score
         if team2Score > team1Score:
             team["wins"] += 1
+            team["points"] += 3
             thisGameResult = True
         elif team2Score < team1Score:
             team["losses"] += 1
+            team["points"] += 0
             thisGameResult = False
         else:
             team["draws"] += 1
+            team["points"] += 1
             thisGameResult = None
+        team["GS"] += team2Score
         team["GA"] += team1Score
-    team["GS"] = team["points"]
     team["GD"] = team["GS"] - team["GA"]
     if teamName in advancedTeams:
         team["advanced"] = True
@@ -204,7 +209,6 @@ def generate_round16_json(round16Data):
 def generate_overview_json(groupData, round16Data):
     overview = []
     for row in groupData + round16Data:
-        # print(row)
         group = row[0]
         if group == "場次":
             print("Group")
