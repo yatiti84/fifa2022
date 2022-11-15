@@ -97,7 +97,7 @@ def organize_team_result(teamName, row, team, advancedTeams):
             rec[i+1] = rec.pop(i)
 
 
-def generate_group_result(row, groups_result, advancedTeams):
+def generate_group_result(row, groups_result, advancedTeams, ended):
     groupName = row[0]
     team1Name = row[3]
     team2Name = row[4]
@@ -132,8 +132,9 @@ def generate_group_result(row, groups_result, advancedTeams):
     group = groups_result.setdefault(groupName, {})
     team1 = group.setdefault(team1Name, team1_template)
     team2 = group.setdefault(team2Name, team2_template)
-    organize_team_result(team1Name, row, team1, advancedTeams)
-    organize_team_result(team2Name, row, team2, advancedTeams)
+    if ended:
+        organize_team_result(team1Name, row, team1, advancedTeams)
+        organize_team_result(team2Name, row, team2, advancedTeams)
 
 
 def generate_group_json(groupData, advancedTeams):
@@ -150,7 +151,9 @@ def generate_group_json(groupData, advancedTeams):
 
         ended = True if row[5] == 'TRUE' else False
         if ended and row[3] and row[4] and row[6] and row[7]:
-            generate_group_result(row, groups_result, advancedTeams)
+            generate_group_result(row, groups_result, advancedTeams, ended)
+        elif row[6] == '0' and row[7] == '0':
+            generate_group_result(row, groups_result, advancedTeams, ended)
 
     schedule = [{groupName: groupGames}
                 for groupName, groupGames in groups_schedule.items()]
